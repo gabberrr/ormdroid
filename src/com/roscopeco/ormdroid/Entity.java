@@ -301,7 +301,7 @@ public abstract class Entity {
         b.append(" ");
         b.append(TypeMapper.sqlType(mFields.get(i).getType()));
         if (colName.equals(mPrimaryKeyColumnName)) {
-          b.append(" PRIMARY KEY AUTOINCREMENT");
+          b.append(" PRIMARY KEY ");
         }
 
         if (i < len - 1) {
@@ -370,14 +370,14 @@ public abstract class Entity {
 
       for (int i = 0; i < len; i++) {
         Field f = fields.get(i);
-        if (!isPrimaryKey(f)) {
+      //  if (!isPrimaryKey(f)) {
           b.append(names.get(i));
           
           if (i < len-1) {
             b.append(",");
           }
 
-        }
+      //  }
       }
 
       return b.toString();
@@ -390,7 +390,7 @@ public abstract class Entity {
 
       for (int i = 0; i < len; i++) {
         Field f = fields.get(i);
-        if (!isPrimaryKey(f)) {
+      //  if (!isPrimaryKey(f)) {
           Object val;
           try {
             val = f.get(receiver);
@@ -407,7 +407,7 @@ public abstract class Entity {
           if (i < len-1) {
             b.append(",");
           }
-        }
+      //  }
       }
 
       return b.toString();
@@ -423,24 +423,27 @@ public abstract class Entity {
         Field f = fields.get(i);
         String name = names.get(i);
 
-        // We don't want to set the primary key...
-        if (name != mPrimaryKeyColumnName) {
-          b.append(name);
-          b.append("=");
           Object val;
           try {
-            val = f.get(receiver);
+              val = f.get(receiver);
           } catch (IllegalAccessException e) {
-            Log.w(TAG,
-                "IllegalAccessException accessing field "
-                    + fields.get(i).getName() + "; Inserting NULL");
-            val = null;
+              Log.w(TAG,
+                      "IllegalAccessException accessing field "
+                              + fields.get(i).getName() + "; Inserting NULL");
+              val = null;
           }
-          b.append(val == null ? "null" : processValue(db, val));
-          if (i < (len - 1)) {
-            b.append(",");
+          if(val!=null) {
+              // We don't want to set the primary key...
+              //  if (name != mPrimaryKeyColumnName) {
+              b.append(name);
+              b.append("=");
+
+              b.append(processValue(db, val));
+              if (i < (len - 1)) {
+                  b.append(",");
+              }
           }
-        }
+      //  }
       }
 
       return b.toString();
@@ -455,38 +458,40 @@ public abstract class Entity {
       return string;
     }
 
-    int insert(SQLiteDatabase db, Entity o) {
-      String sql = "INSERT INTO " + mTableName + " ("
-          + stripTrailingComma(getColNames()) + ") VALUES ("
-          + stripTrailingComma(getFieldValues(db, o)) + ")";
+      int insert(SQLiteDatabase db, Entity o)
+      {
+          String firstSql = new StringBuilder().append("INSERT OR IGNORE INTO ").append(this.mTableName).append(" (").append(stripTrailingComma(getColNames())).append(") VALUES (").append(stripTrailingComma(getFieldValues(db, o))).append(")").toString();
 
-      Log.v(getClass().getSimpleName(), sql);
+          String updateContent = getSetFields(db, o);
 
-      db.execSQL(sql);
+          String secondSql = new StringBuilder().append("UPDATE ").append(this.mTableName).append(" SET ").append(stripTrailingComma(updateContent)).append(" WHERE ").append(this.mPrimaryKeyColumnName).append("=").append(getPrimaryKeyValue(o)).toString();
 
-      Cursor c = db.rawQuery("select last_insert_rowid();", null);
-      try {
-	    if (c.moveToFirst()) {
-	      Integer i = c.getInt(0);
-          setPrimaryKeyValue(o, i);
-	      return i;
-	    } else {
-	      throw new ORMDroidException("Failed to get last inserted id after INSERT");
-	    }
-      } finally {
-      	c.close();
+          String sql = new StringBuilder().append("INSERT OR UPDATE INTO ").append(this.mTableName).append(" (").append(stripTrailingComma(getColNames())).append(") VALUES (").append(stripTrailingComma(getFieldValues(db, o))).append(")").toString();
+
+          Log.i("TESTORM", new StringBuilder().append(" sql1 = ").append(firstSql).toString());
+          Log.i("TESTORM", new StringBuilder().append(" sql2 = ").append(secondSql).toString());
+
+          Log.v(getClass().getSimpleName(), sql);
+
+          db.execSQL(firstSql);
+          if (!updateContent.isEmpty()) {
+              db.execSQL(secondSql);
+          }
+
+          return 0;
       }
-    }
 
-    void update(SQLiteDatabase db, Entity o) {
-      // stripTrailingComma: issue #9
-      String sql = "UPDATE " + mTableName + " SET " + stripTrailingComma(getSetFields(db, o))
-          + " WHERE " + mPrimaryKeyColumnName + "=" + getPrimaryKeyValue(o);
 
-      Log.v(getClass().getSimpleName(), sql);
+      void update(SQLiteDatabase db, Entity o)
+      {
+          String updateString = getSetFields(db, o);
+          String sql = new StringBuilder().append("UPDATE ").append(this.mTableName).append(" SET ").append(stripTrailingComma(updateString)).append(" WHERE ").append(this.mPrimaryKeyColumnName).append("=").append(getPrimaryKeyValue(o)).toString();
 
-      db.execSQL(sql);
-    }
+          Log.i("TESTORM", new StringBuilder().append(" update  sql = ").append(sql).toString());
+          Log.v(getClass().getSimpleName(), sql);
+          if (!updateString.isEmpty())
+              db.execSQL(sql);
+      }
 
     /*
      * Doesn't move the cursor - expects it to be positioned appropriately.
