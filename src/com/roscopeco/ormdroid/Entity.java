@@ -433,8 +433,7 @@ public abstract class Entity {
               val = null;
           }
           if(val!=null) {
-              // We don't want to set the primary key...
-              //  if (name != mPrimaryKeyColumnName) {
+
               b.append(name);
               b.append("=");
 
@@ -443,7 +442,6 @@ public abstract class Entity {
                   b.append(",");
               }
           }
-      //  }
       }
 
       return b.toString();
@@ -466,15 +464,12 @@ public abstract class Entity {
 
           String secondSql = new StringBuilder().append("UPDATE ").append(this.mTableName).append(" SET ").append(stripTrailingComma(updateContent)).append(" WHERE ").append(this.mPrimaryKeyColumnName).append("=").append(getPrimaryKeyValue(o)).toString();
 
-          String sql = new StringBuilder().append("INSERT OR UPDATE INTO ").append(this.mTableName).append(" (").append(stripTrailingComma(getColNames())).append(") VALUES (").append(stripTrailingComma(getFieldValues(db, o))).append(")").toString();
+          Log.v(getClass().getSimpleName(), firstSql);
 
-          Log.i("TESTORM", new StringBuilder().append(" sql1 = ").append(firstSql).toString());
-          Log.i("TESTORM", new StringBuilder().append(" sql2 = ").append(secondSql).toString());
-
-          Log.v(getClass().getSimpleName(), sql);
 
           db.execSQL(firstSql);
           if (!updateContent.isEmpty()) {
+              Log.v(getClass().getSimpleName(), secondSql);
               db.execSQL(secondSql);
           }
 
@@ -485,9 +480,9 @@ public abstract class Entity {
       void update(SQLiteDatabase db, Entity o)
       {
           String updateString = getSetFields(db, o);
+          
           String sql = new StringBuilder().append("UPDATE ").append(this.mTableName).append(" SET ").append(stripTrailingComma(updateString)).append(" WHERE ").append(this.mPrimaryKeyColumnName).append("=").append(getPrimaryKeyValue(o)).toString();
 
-          Log.i("TESTORM", new StringBuilder().append(" update  sql = ").append(sql).toString());
           Log.v(getClass().getSimpleName(), sql);
           if (!updateString.isEmpty())
               db.execSQL(sql);
