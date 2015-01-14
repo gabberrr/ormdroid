@@ -53,7 +53,7 @@ public class DBAdapter {
 
     public SQLiteDatabase open(String path) throws SQLException {
         db = DBHelper.getWritableDatabase();
-      //  db = db.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);
+        db = db.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);
         return db;
     }
 
