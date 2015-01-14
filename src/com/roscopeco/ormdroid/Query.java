@@ -305,6 +305,8 @@ public class Query<T extends Entity> {
       sqlCache1 = generate(1);
     }
     String sql = sqlCache1;
+
+    //  Log.i("ORMLOLO", "execute sql = "+sql);
     Log.v(TAG, sql);
     Cursor c = db.rawQuery(sql, null);
     try {

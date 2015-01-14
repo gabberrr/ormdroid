@@ -25,7 +25,7 @@ import android.util.Log;
 
 /**
  * <p>Provides static-initialization for the ORMDroid framework.
- * The {@link #initialize(Context)} method must be called with
+ * The {@link #initialize(Context,Integer)} method must be called with
  * a valid {@link Context} prior to using any framework methods
  * that reference the default database.</p>
  * 
@@ -43,6 +43,8 @@ public class ORMDroidApplication extends Application {
   private Context mContext;
   private String mDBName;
   private int mDBVisibility = Context.MODE_PRIVATE;
+
+  private static DBAdapter dbAdapter;
 
   private static void initInstance(ORMDroidApplication app, Context ctx) {
     app.mContext = ctx.getApplicationContext();
@@ -69,11 +71,14 @@ public class ORMDroidApplication extends Application {
    * 
    * @param ctx A {@link Context} within the application to initialize.
    */
-  public static void initialize(Context ctx) {
+  public static void initialize(Context ctx, Integer version) {
     if (!isInitialized()) {
       initInstance(singleton = new ORMDroidApplication(), ctx);
+      DBAdapter.setVersion(version);
+      dbAdapter = new DBAdapter(ctx);
     }
   }
+
 
   /**
    * Obtain the singleton instance of this class.
@@ -151,7 +156,10 @@ public class ORMDroidApplication extends Application {
    */
   public SQLiteDatabase getDatabase() {
   	try {
-      return SQLiteDatabase.openDatabase(mContext.getDatabasePath(getDatabaseName()).getPath(), null, SQLiteDatabase.OPEN_READWRITE);
+        return dbAdapter.open(mContext.getDatabasePath(getDatabaseName()).getPath());
+//        SQLiteDatabase database = SQLiteDatabase.openDatabase(mContext.getDatabasePath(getDatabaseName()).getPath(), null, SQLiteDatabase.OPEN_READWRITE);
+//
+//        return database;
   	} catch (SQLiteException e) {
   		// Couldn't open the database. It may never have existed, or it may have been
   		// deleted while the app was running. If this is the case, entity mappings may still

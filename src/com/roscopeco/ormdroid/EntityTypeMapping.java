@@ -74,6 +74,7 @@ public class EntityTypeMapping implements TypeMapping {
       // TODO could use Query here? Maybe Query could have a primaryKey() method to select by prikey?
       EntityMapping map = Entity.getEntityMappingEnsureSchema(db, expEntityType);
       String sql = "SELECT * FROM " + map.mTableName + " WHERE " + map.mPrimaryKeyColumnName + "=" + c.getInt(columnIndex) + " LIMIT 1";
+     //   Log.v("ORMDROID1","inverse = "+ sql);
       Log.v(TAG, sql);
       Cursor valc = db.rawQuery(sql, null);
       try {
