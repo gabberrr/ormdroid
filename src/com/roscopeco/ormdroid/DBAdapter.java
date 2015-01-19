@@ -14,19 +14,22 @@ import android.util.Log;
 public class DBAdapter {
 
     final Context context;
-    DatabaseHelper DBHelper;
-    SQLiteDatabase db;
+    private DatabaseHelper DBHelper;
+    private SQLiteDatabase db;
+    private static String name;
 
     private static int version = 1;
 
-    public DBAdapter(Context ctx) {
+    public DBAdapter(Context ctx,String name) {
         this.context = ctx;
+        this.name = name;
         DBHelper = new DatabaseHelper(context);
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
+
         DatabaseHelper(Context context) {
-            super(context, "logs", null, version);
+            super(context, name, null, version);
         }
 
         @Override
@@ -41,6 +44,7 @@ public class DBAdapter {
             Log.i("ORMDROID", "cursor size = "+c.getCount());
             while(c.moveToNext()){
                 String s = c.getString(0);
+                Log.i("ORMDROID", "table = "+s);
                 if(!s.equals("android_metadata")){
                     Log.i("ORMDROID", "DROP TABLE IF EXISTS "+s);
                     db.execSQL("DROP TABLE IF EXISTS "+s);
@@ -53,7 +57,7 @@ public class DBAdapter {
 
     public SQLiteDatabase open(String path) throws SQLException {
         db = DBHelper.getWritableDatabase();
-        db = db.openDatabase(path, null, SQLiteDatabase.OPEN_READWRITE);
+        db = db.openDatabase(path, null, SQLiteDatabase.CREATE_IF_NECESSARY | SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING);
         return db;
     }
 

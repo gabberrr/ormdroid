@@ -75,7 +75,7 @@ public class ORMDroidApplication extends Application {
     if (!isInitialized()) {
       initInstance(singleton = new ORMDroidApplication(), ctx);
       DBAdapter.setVersion(version);
-      dbAdapter = new DBAdapter(ctx);
+      dbAdapter = new DBAdapter(ctx, singleton.getDatabaseName());
     }
   }
 
@@ -161,7 +161,7 @@ public class ORMDroidApplication extends Application {
 //
 //        return database;
   	} catch (SQLiteException e) {
-        Log.i("ORMDROID"," can't open database")
+        Log.i("ORMDROID"," can't open database");
   		// Couldn't open the database. It may never have existed, or it may have been
   		// deleted while the app was running. If this is the case, entity mappings may still
   		// be hanging around from that run, with their mSchemaCreated flag set to true. Since
