@@ -58,6 +58,7 @@ public class DBAdapter {
     public SQLiteDatabase open(String path) throws SQLException {
         db = DBHelper.getWritableDatabase();
         db = db.openDatabase(path, null, SQLiteDatabase.CREATE_IF_NECESSARY | SQLiteDatabase.ENABLE_WRITE_AHEAD_LOGGING);
+        db.enableWriteAheadLogging();
         return db;
     }
 

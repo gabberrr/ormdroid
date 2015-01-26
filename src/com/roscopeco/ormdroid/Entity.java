@@ -804,7 +804,7 @@ public abstract class Entity {
      */
     public int save() {
         SQLiteDatabase db = ORMDroidApplication.getDefaultDatabase();
-        db.beginTransaction();
+        db.beginTransactionNonExclusive();
 
         int result = -1;
 
@@ -839,7 +839,7 @@ public abstract class Entity {
     public void delete() {
         if (!mTransient) {
             SQLiteDatabase db = ORMDroidApplication.getDefaultDatabase();
-            db.beginTransaction();
+            db.beginTransactionNonExclusive();
 
             try {
                 delete(db);
