@@ -40,18 +40,7 @@ public class DBAdapter {
 
             Log.i("ORMDROID", "onUpgrade oldVersion = " + oldVersion + " newVersion = " + newVersion);
 
-            Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-            Log.i("ORMDROID", "cursor size = "+c.getCount());
-            while(c.moveToNext()){
-                String s = c.getString(0);
-                Log.i("ORMDROID", "table = "+s);
-                if(!s.equals("android_metadata")){
-                    Log.i("ORMDROID", "DROP TABLE IF EXISTS "+s);
-                    db.execSQL("DROP TABLE IF EXISTS "+s);
-                   // Log.i("DATABASETABLES", " table name = " + s);
-                }
-            }
-            c.close();
+            ORMDroidApplication.getSingleton().dropTables(db);
         }
     }
 

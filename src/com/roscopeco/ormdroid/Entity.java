@@ -19,6 +19,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.lang.Object;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -156,6 +157,7 @@ import java.util.regex.Pattern;
  * using reflection).</p>
  */
 public abstract class Entity {
+
     static final class EntityMapping {
         private static final String TAG = "INTERNAL<EntityMapping>";
         private static final Pattern MATCH_DOTDOLLAR = Pattern.compile("[\\.\\$]");
@@ -169,6 +171,8 @@ public abstract class Entity {
         private ArrayList<Field> mInverseFields = new ArrayList<Field>();
         private ArrayList<Field> mIndexFields = new ArrayList<Field>();
         boolean mSchemaCreated = false;
+
+
 
         // Not concerned too much about reflective annotation access in this
         // method, since this only runs once per model class...
@@ -803,20 +807,24 @@ public abstract class Entity {
      * @return The primary key of the inserted item (if object was transient), or -1 if an update was performed.
      */
     public int save() {
-        SQLiteDatabase db = ORMDroidApplication.getDefaultDatabase();
-        db.beginTransactionNonExclusive();
+       synchronized (ORMDroidApplication.getSingleton().getLock()) {
 
-        int result = -1;
+           SQLiteDatabase db = ORMDroidApplication.getDefaultDatabase();
+           db.beginTransactionNonExclusive();
 
-        try {
-            result = save(db);
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+           int result = -1;
 
-        db.close();
-        return result;
+           try {
+               result = save(db);
+               db.setTransactionSuccessful();
+           } finally {
+               db.endTransaction();
+           }
+
+           db.close();
+           return result;
+       }
+
     }
 
     /**

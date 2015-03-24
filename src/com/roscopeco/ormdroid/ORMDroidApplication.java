@@ -22,6 +22,9 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
+import android.database.Cursor;
+
+import java.lang.Object;
 
 /**
  * <p>Provides static-initialization for the ORMDroid framework.
@@ -34,6 +37,9 @@ import android.util.Log;
  * to have this initialization handled automatically.</p>
  */
 public class ORMDroidApplication extends Application {
+
+    private Object mLock;
+
   @SuppressWarnings("unused")
   private static final String VISIBILITY_PRIVATE = "PRIVATE";
   private static final String VISIBILITY_WORLD_READABLE = "WORLD_READABLE";
@@ -46,8 +52,13 @@ public class ORMDroidApplication extends Application {
 
   private static DBAdapter dbAdapter;
 
+  public Object getLock(){
+      return mLock;
+  }
+
   private static void initInstance(ORMDroidApplication app, Context ctx) {
     app.mContext = ctx.getApplicationContext();
+    app.mLock = new Object();
 		if (app.getBaseContext() == null) {
 			app.attachBaseContext(app.mContext);
 		}
@@ -155,20 +166,37 @@ public class ORMDroidApplication extends Application {
    * @return The database.
    */
   public SQLiteDatabase getDatabase() {
-  	try {
-        return dbAdapter.open(mContext.getDatabasePath(getDatabaseName()).getPath());
+      synchronized (mLock) {
+          try {
+              return dbAdapter.open(mContext.getDatabasePath(getDatabaseName()).getPath());
 //        SQLiteDatabase database = SQLiteDatabase.openDatabase(mContext.getDatabasePath(getDatabaseName()).getPath(), null, SQLiteDatabase.OPEN_READWRITE);
 //
 //        return database;
-  	} catch (SQLiteException e) {
-        Log.i("ORMDROID"," can't open database");
-  		// Couldn't open the database. It may never have existed, or it may have been
-  		// deleted while the app was running. If this is the case, entity mappings may still
-  		// be hanging around from that run, with their mSchemaCreated flag set to true. Since
-  		// this information is now stale, let's flush it (See issue #17).
-  		Entity.flushSchemaCreationCache();
-  		
-  		return this.openOrCreateDatabase(this.getDatabaseName(), this.mDBVisibility, null);
-  	}
-  }  
+          } catch (SQLiteException e) {
+              Log.i("ormtestdroid", " can't open database");
+              // Couldn't open the database. It may never have existed, or it may have been
+              // deleted while the app was running. If this is the case, entity mappings may still
+              // be hanging around from that run, with their mSchemaCreated flag set to true. Since
+              // this information is now stale, let's flush it (See issue #17).
+              Entity.flushSchemaCreationCache();
+
+              return this.openOrCreateDatabase(this.getDatabaseName(), this.mDBVisibility, null);
+          }
+      }
+  }
+
+  public void dropTables(SQLiteDatabase db){
+      Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+      Log.i("ORMDROID", "cursor size = "+c.getCount());
+      while(c.moveToNext()){
+          String s = c.getString(0);
+          Log.i("ORMDROID", "table = "+s);
+          if(!s.equals("android_metadata")){
+              Log.i("ORMDROID", "DROP TABLE IF EXISTS "+s);
+              db.execSQL("DROP TABLE IF EXISTS "+s);
+              // Log.i("DATABASETABLES", " table name = " + s);
+          }
+      }
+      c.close();
+  }
 }
