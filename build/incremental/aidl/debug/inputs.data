@@ -1,0 +1,19 @@
+# incremental data. DO NOT EDIT.
+# format is <lastModified> <length> <SHA-1> <path>
+# Encoding is UTF-8
+1417157726000 4064 1bf6b6a55928a2f0ff994349f57a4d082511dfae /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/ListTypeMapping.java
+1417157726000 1890 998078d65c188254740a98925bc7166a272a9188 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/StringTypeMapping.java
+1417157726000 2262 006d71e1789228c3c33b7fffb4924eb81fd2bfdf /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/NumericTypeMapping.java
+1417157726000 4847 0dab0e284cb793b967efc0f587fc400fecf936e1 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/TypeMapper.java
+1417157726000 1263 2e948d7837e5bd435854907d2bcb5f959e53e15a /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/Column.java
+1421240060000 3454 9fe416f3dce638401730f11343bb4e35d3223399 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/EntityTypeMapping.java
+1421240060000 11414 62c9f972ec4b5c8f2d24a6ef501fdf594ec4f680 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/Query.java
+1417157726000 1117 1f5e05b84319067738e94a36ee647c980d39c512 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/TypeMappingException.java
+1427199256000 1566 b0fa3b0ff78f645b3f9f408d37652b1b6792e811 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/DBAdapter.java
+1427119901000 32849 91ad8922954544250cdb9571ece108a61ceed7a4 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/Entity.java
+1417157726000 3034 49e9d3c990976a7fa725be9ac8e649a80a29bff6 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/TypeMapping.java
+1427199325000 7383 578e5f688dfbee6d5888f7cc13d56c8313457271 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/ORMDroidApplication.java
+1417157726000 1481 136ea4da443ac90823c063560d9070e706bf0822 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/MappingList.java
+1417157726000 1104 e4a0b05f3db87fd05a05960f53f1b94382affd22 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/ORMDroidException.java
+1417157726000 1624 90e181e0cef726393a9af988e809322e141bcbb6 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/DateTypeMapping.java
+1417157726000 1142 578b3b5584915620162c9e08d8e8ccf2aa0953b9 /home/dmitriy/work/git/ormdroid/src/com/roscopeco/ormdroid/Table.java
